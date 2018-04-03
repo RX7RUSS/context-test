@@ -2,18 +2,58 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-class App extends Component {
+const MyContext = React.createContext();
+
+class MyProvider extends Component {
+  state= {
+    name: 'Russ',
+    age: 40,
+    male: true
+  }
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <MyContext.Provider value={{
+        state: this.state,
+        growAYearOlder: () => this.setState({
+        age:  this.state.age + 1
+        })
+      }} >
+        {this.props.children}
+      </MyContext.Provider>
+    )
+  }
+}
+
+
+class Person extends Component {
+  render() {
+    return (
+      <div className="Person">
+        <MyContext.Consumer>
+          {(context) => (
+            <React.Fragment>
+              <p> Age: {context.state.age} </p>
+              <p> Name: {context.state.name} </p>
+              <button onClick={context.growAYearOlder}>Get Older</button>
+            </React.Fragment>
+          )}
+        </MyContext.Consumer>
       </div>
+    );
+  }
+}
+
+class App extends Component {
+
+
+  render() {
+    return (
+      <MyProvider>
+      <div className="App">
+        <p> This is the App text! </p>
+        <Person />
+      </div>
+      </MyProvider>
     );
   }
 }
